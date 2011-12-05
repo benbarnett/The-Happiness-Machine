@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset=utf-8 />
+<style type="text/css">
+#textBox{
+	font-family: "Arial";
+	font-size: 22px;
+	color: #00AEEF;
+	padding:20px;
+}
+</style>
+
+<title>RFID Example</title>
+
+<!-- order of import is important -->
+<!-- a minified file will be provided in the future to make this simpler -->
+<script src="../libs/jquery-1.6.3.min.js"></script>
+<script src="../src/ARDJS.js"></script>
+<script src="../src/Event.js"></script>
+<script src="../src/EventDispatcher.js"></script>
+<script src="../src/Pin.js"></script>
+<script src="../src/ArduinoEvent.js"></script>
+<script src="../src/Arduino.js"></script>
+<script src="../src/ui/ID12RFIDReader.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+	// dependencies
+	// declare these variables so you don't have
+	// to type the full namespace
+	var Arduino = ARDJS.Arduino;
+	var ArduinoEvent = ARDJS.ArduinoEvent;
+	var ID12RFIDReader = ARDJS.ui.ID12RFIDReader;
+	var RFIDEvent = ARDJS.ui.RFIDEvent;
+		
+	var ard = new Arduino("localhost", 8080);
+	
+	var rfid;
+		
+	ard.addEventListener(ArduinoEvent.READY, onReady);
+
+	function onReady(event) {
+					
+		ard.removeEventListener(ArduinoEvent.READY, onReady);
+			
+		rfid = new ID12RFIDReader(ard);
+		rfid.addEventListener(RFIDEvent.ADD_TAG, onAddTag);
+		rfid.addEventListener(RFIDEvent.REMOVE_TAG, onRemoveTag);
+	}
+	
+	function onAddTag(event) {
+		$('#textBox').html("Added tag: " + event.tag);
+	}
+	
+	function onRemoveTag(event) {
+		$('#textBox').html("Removed tag: " + event.tag);
+	}
+						
+});
+
+</script>
+
+</head>
+<body>
+  
+<div id="textBox">Read a tag.</div>
+  
+</body>
+</html>​
