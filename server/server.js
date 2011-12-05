@@ -28,10 +28,10 @@ var mimeTypes = {
 var serialport = require("serialport");
 var serialPort = serialport.SerialPort;
 // to do: pass port as arg or read from text file?
-var port = "/dev/tty.usbmodemfd121";
+var port = "/dev/tty.usbserial-A9007KOS";
 
 var serialDefaults = {
-	baudrate: 57600,
+	baudrate: 9600,
 	buffersize: 1
 };
 
@@ -39,12 +39,20 @@ var serialDefaults = {
 var serial = new serialPort(port , serialDefaults);
 
 serial.on( "data", function( data ) {
-		
-	if ( data[0] >= 0 ) {
-		if(connectedSocket != null) {
-			connectedSocket.sendUTF(String(data[0]));
-		}
+	
+	// console.dir(data);
+	// connectedSocket.sendUTF(String(data[0]));
+	if(connectedSocket != null) {
+		// console.log(String(data[0]));
+		connectedSocket.sendUTF(data);
 	}
+	
+	// if ( data[0] >= 0 ) {
+	// 	if(connectedSocket != null) {
+	// 		console.log(String(data[0]));
+	// 		connectedSocket.sendUTF(String(data[0]));
+	// 	}
+	// }
 
 });
 
