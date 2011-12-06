@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset=utf-8 />
+
+
+<title>The Happiness Machine</title>
+
+<style>
+	body {
+		background:#000;
+		padding:0;
+		margin:0;
+		font-weight: bold;
+		overflow:hidden;
+	}
+
+	#info {
+		position: absolute;
+		top: 0px; width: 100%;
+		color: #ffffff;
+		padding: 5px;
+		font-family:Monospace;
+		font-size:13px;
+		text-align:center;
+		z-index:1000;
+	}
+
+	a {	color: #ffffff;	}
+
+	#oldie a { color:#0b0 }
+</style>
+
+<!-- order of import is important -->
+<!-- a minified file will be provided in the future to make this simpler -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="js/arduino/ARDJS.js"></script>
+<script src="js/arduino/Event.js"></script>
+<script src="js/arduino/EventDispatcher.js"></script>
+<script src="js/arduino/ArduinoEvent.js"></script>
+<script src="js/arduino/Pin.js"></script>
+<script src="js/arduino/I2CBase.js"></script>
+<script src="js/arduino/ui/BlinkM.js"></script>
+<script src="js/arduino/ui/CompassHMC6352.js"></script>
+<script src="js/arduino/ui/PhysicalInputBase.js"></script>
+<script src="js/arduino/ui/Button.js"></script>
+<script src="js/arduino/Arduino.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+	// dependencies
+	// declare these variables so you don't have
+	// to type the full namespace
+	var Arduino = ARDJS.Arduino;
+	var Pin = ARDJS.Pin;
+	var ArduinoEvent = ARDJS.ArduinoEvent;
+	var Event = ARDJS.Event;
+	var BlinkM = ARDJS.ui.BlinkM;
+	var CompassHMC6352 = ARDJS.ui.CompassHMC6352;
+	var Button = ARDJS.ui.Button;
+	var ButtonEvent = ARDJS.ui.ButtonEvent;
+
+		
+	var ard = new Arduino("localhost", 8080);
+	
+	var frames = 0;
+	var intensity = 0;
+	var direction = 1;
+	var servoDir = true;
+	var blinkM;
+	var compass;
+	var servo;
+	var blinkLED;
+	var fadeLED;
+
+	console.log("name = " + ard.name);
+	
+	ard.addEventListener(ArduinoEvent.READY, onReady);
+
+	function onReady(event) {
+					
+		ard.removeEventListener(ArduinoEvent.READY, onReady);
+					
+		// listen for incoming string messages
+		ard.addEventListener(ArduinoEvent.STRING_MESSAGE, onStringMessage);
+		
+		// set digital pin 13 to output
+		ard.setPinMode(13, Pin.DOUT);
+		// get a reference to the pin
+		blinkLED = ard.getDigitalPin(13);
+		blinkLED.value = Pin.LOW;	
+		setInterval(blink, 3000);
+	
+		//set digital pin 2 to input
+		//ard.setPinMode(2, Pin.DIN);
+		
+		// get a reference to the pin and listen for Change event
+		//var button01 = ard.getDigitalPin(2);
+		//var button01 = new Button(ard.getDigitalPin(2), Button.PULL_DOWN);
+		//button01.addEventListener(ButtonEvent.PRESS, onButtonPress);
+		//button01.addEventListener(ButtonEvent.RELEASE, onButtonRelease);
+		
+		// enable reporting for an analog pin
+		//ard.setAnalogPinReporting(0, Pin.ON);
+		//var pot = ard.getAnalogPin(0);
+		//pot.addEventListener(Event.CHANGE, onPotChange);
+		// disable reporting for an analog pin
+		//ard.setAnalogPinReporting(0, Pin.OFF);
+		
+		// set analog pin to digital input
+		ard.setPinMode(54, Pin.DIN);
+		var button02 = ard.getDigitalPin(54);
+		button02.addEventListener(Event.CHANGE, onButtonChange);
+		
+		// set a pin to PWM
+		ard.setPinMode(11, Pin.PWM);
+		fadeLED = ard.getDigitalPin(11);
+		setInterval(fade, 11);			
+		
+		// set a pin to SERVO
+		ard.setPinMode(9, Pin.SERVO);
+		servo = ard.getDigitalPin(9);
+		//setInterval(servoTest, 5000);
+		
+		//blinkM = new BlinkM(ard);
+		//blinkM.stopScript();
+		//setInterval(randomColor, 2000);
+		
+		//compass = new CompassHMC6352(ard);
+		//compass.addEventListener(Event.CHANGE, onHeadingUpdate);
+		
+	}
+	
+	
+	function onHeadingUpdate(evt) {
+		//console.log("heading = " + evt.target.heading);
+		$('#heading').html("heading: " + evt.target.heading);
+	}	
+	
+	function randomColor() {
+		var red = Math.floor(Math.random() * 255);
+		var green = Math.floor(Math.random() * 255);
+		var blue = Math.floor(Math.random() * 255);
+		
+		blinkM.goToRGBColorNow([red, green, blue]);
+		//blinkM.fadeToRGBColor([red, green, blue]);
+	}	
+	
+	function onPotChange(event) {
+		var pin = event.target;
+		var analogData = "pot value: " + pin.value.toFixed(3) + 
+			"\tmin = " + pin.minimum.toFixed(3) + "\tmax = " + 
+			pin.maximum.toFixed(3) + "\tavg = " + pin.average.toFixed(3)
+		
+		//console.log(analogData);
+		$('#potData').html(analogData);	
+	}
+
+	function onButtonPress(event) {
+		var btn = event.target;
+		$('#button').html("button: pin = " + btn.pinNumber + " pressed");
+	}
+
+	function onButtonRelease(event) {
+		var btn = event.target;
+		$('#button').html("button: pin = " + btn.pinNumber + " released");
+	}
+	
+	function onButtonChange(event) {
+		var pin = event.target;
+		//console.log("button changed: pin = " + pin.number + "\tvalue = " + pin.value;
+		$('#button').html("button: pin = " + pin.number + "\tvalue = " + pin.value);	
+	}	
+	
+	function onFirmwareVersion(event) {
+		console.log("firmware version: " + event.version);
+	}
+	
+	function onFirmwareName(event) {
+		console.log("firmware name: " + event.name + " version: " + event.version);
+	}
+	
+	function onCapabilityResponse(event) {
+		// print capabilities to the console
+		ard.reportCapabilities();
+	}
+	
+	function onStringMessage(event) {
+		console.log("string received: " + event.message);
+	}
+	
+	function onPinStateResponse(event) {
+		var modeNames = {0:"input", 1:"output", 2:"analog", 3:"pwm", 4:"servo", 5:"shift", 6:"i2c"};
+		var pinType = modeNames[event.type];
+		console.log("pin state response = " + event.pin + "\t" + pinType);
+	}	
+	
+	function fade() {
+		fadeLED.value = (intensity += direction);
+		// test sendExtendedAnalog method
+		//ard.sendExtendedAnalog(11, intensity += direction);
+		if (intensity == 255) direction = -1;
+		else if (intensity == 0) direction = 1;
+	}
+	
+	function servoTest() {
+		if (servoDir) {
+			servo.value = 0;
+		} else {
+			servo.value = 180;
+		}
+		servoDir = !servoDir;
+	}
+	
+	function blink() {
+		frames++;
+		if (frames % 2 == 0) {
+			blinkLED.value = Pin.LOW;
+		} else {
+			blinkLED.value = Pin.HIGH;
+		}
+	}
+			
+});
+
+</script>
+
+</head>
+<body>
+  
+	
+	
+	<script src="js/three/build/Three.js"></script>
+
+	<script src="js/three/Detector.js"></script>
+	<script src="js/three/RequestAnimationFrame.js"></script>
+
+	<script>
+
+		if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+		var container;
+
+		var camera, scene, renderer;
+		var cameraCube, sceneCube;
+
+		var mesh, zmesh, lightMesh, geometry;
+		var spheres = [];
+
+		var directionalLight, pointLight;
+
+		var mouseX = 0, mouseY = 0;
+
+		var windowHalfX = window.innerWidth / 2;
+		var windowHalfY = window.innerHeight / 2;
+
+		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+		init();
+		animate();
+
+		function init() {
+
+			container = document.createElement( 'div' );
+			document.body.appendChild( container );
+
+			camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
+			camera.position.z = 3200;
+
+			cameraCube = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
+
+			cubeTarget = new THREE.Vector3( 0, 0, 0 );
+
+			scene = new THREE.Scene();
+			sceneCube = new THREE.Scene();
+
+			var geometry = new THREE.SphereGeometry( 100, 32, 16 );
+
+			var path = "textures/cube/Park2/";
+			var format = '.jpg';
+			var urls = [
+					path + 'posx' + format, path + 'negx' + format,
+					path + 'posy' + format, path + 'negy' + format,
+					path + 'posz' + format, path + 'negz' + format
+				];
+
+
+			var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+
+			var shader = THREE.ShaderUtils.lib[ "fresnel" ];
+			var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+
+			uniforms[ "tCube" ].texture = textureCube;
+
+			var parameters = { fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShader, uniforms: uniforms };
+			var material = new THREE.ShaderMaterial( parameters );
+
+			for ( var i = 0; i < 500; i ++ ) {
+
+				var mesh = new THREE.Mesh( geometry, material );
+
+				mesh.position.x = Math.random() * 10000 - 5000;
+				mesh.position.y = Math.random() * 10000 - 5000;
+				mesh.position.z = Math.random() * 10000 - 5000;
+
+				mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
+
+				scene.add( mesh );
+
+				spheres.push( mesh );
+
+			}
+
+			scene.matrixAutoUpdate = false;
+
+			// Skybox
+
+			var shader = THREE.ShaderUtils.lib[ "cube" ];
+			shader.uniforms[ "tCube" ].texture = textureCube;
+
+			var material = new THREE.ShaderMaterial( {
+
+				fragmentShader: shader.fragmentShader,
+				vertexShader: shader.vertexShader,
+				uniforms: shader.uniforms
+
+			} ),
+
+			mesh = new THREE.Mesh( new THREE.CubeGeometry( 100000, 100000, 100000 ), material );
+			mesh.flipSided = true;
+			sceneCube.add( mesh );
+
+			//
+
+			renderer = new THREE.WebGLRenderer( { antialias: false } );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.autoClear = false;
+			container.appendChild( renderer.domElement );
+
+		}
+
+		function onDocumentMouseMove(event) {
+
+			mouseX = ( event.clientX - windowHalfX ) * 10;
+			mouseY = ( event.clientY - windowHalfY ) * 10;
+
+		}
+
+		//
+
+		function animate() {
+
+			requestAnimationFrame( animate );
+
+			render();
+
+		}
+
+		function render() {
+
+			var timer = 0.0001 * Date.now();
+
+			camera.position.x += ( mouseX - camera.position.x ) * .05;
+			camera.position.y += ( - mouseY - camera.position.y ) * .05;
+
+			camera.lookAt( scene.position );
+
+			cubeTarget.x = - camera.position.x;
+			cubeTarget.y = - camera.position.y;
+			cubeTarget.z = - camera.position.z;
+
+			cameraCube.lookAt( cubeTarget );
+
+			for ( var i = 0, il = spheres.length; i < il; i ++ ) {
+
+				var sphere = spheres[ i ];
+
+				sphere.position.x = 5000 * Math.cos( timer + i );
+				sphere.position.y = 5000 * Math.sin( timer + i * 1.1 );
+
+			}
+
+			renderer.clear();
+			renderer.render( sceneCube, cameraCube );
+			renderer.render( scene, camera );
+
+		}
+
+	</script>
+  
+</body>
+</html>​
