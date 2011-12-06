@@ -10,7 +10,7 @@ var spheres = [];
 
 var blowing = false;
 
-var directionalLight, pointLight;
+var directionalLight, pointLight, ambientLight;
 
 var mouseX = 0, mouseY = 0;
 
@@ -33,6 +33,9 @@ function init() {
 	cameraCube = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 5, 100000 );
 
 	cubeTarget = new THREE.Vector3( 0, 0, 0 );
+	
+	ambientLight = new THREE.DirectionalLight(0xff0000);
+	
 
 	scene = new THREE.Scene();
 	sceneCube = new THREE.Scene();
@@ -58,7 +61,7 @@ function init() {
 	var parameters = { fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShader, uniforms: uniforms };
 	var material = new THREE.ShaderMaterial( parameters );
 
-	for ( var i = 0; i < 250; i ++ ) {
+	for ( var i = 0; i < 100; i ++ ) {
 
 		var mesh = new THREE.Mesh( geometry, material );
 
@@ -66,7 +69,7 @@ function init() {
 		mesh.position.y = mesh.originalY = Math.random() * 10000 - 5000;
 		mesh.position.z = mesh.originalZ = Math.random() * 10000 - 5000;
 
-		mesh.scale.x = mesh.scale.y = mesh.scale.z = mesh.originalScale = Math.random() * 8 + 1;
+		mesh.scale.x = mesh.scale.y = mesh.scale.z = mesh.originalScale = Math.random() * 8 + 0.5;
 
 		scene.add( mesh );
 
@@ -119,6 +122,11 @@ function animate() {
 
 }
 
+
+function pop() {
+	spheres.pop().position.z = -10000000;
+}
+
 function render() {
 
 	var timer = 0.0001 * Date.now();
@@ -160,6 +168,8 @@ function render() {
 		}
 
 	}
+	
+	// cubeTarget.x = -500000;
 
 	renderer.clear();
 	renderer.render( sceneCube, cameraCube );
