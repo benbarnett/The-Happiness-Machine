@@ -31,7 +31,7 @@ var serialPort = serialport.SerialPort;
 var port = "/dev/tty.usbserial-A9007KOS";
 
 var serialDefaults = {
-	baudrate: 9600,
+	baudrate: 115200,
 	buffersize: 1
 };
 
@@ -43,7 +43,8 @@ serial.on( "data", function( data ) {
 	// console.dir(data);
 	// connectedSocket.sendUTF(String(data[0]));
 	if(connectedSocket != null) {
-		// console.log(String(data[0]));
+		console.log('data length:' + data.length);
+		console.log(String(data));
 		connectedSocket.sendUTF(data);
 	}
 	

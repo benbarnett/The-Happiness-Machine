@@ -21,8 +21,8 @@ void loop(void) {
   fsrReading = analogRead(fsrPin);
   micReading = analogRead(micPin);
 
-  Serial.print(fsrReading);
-  Serial.print(micReading)  // the raw analog reading
+//  Serial.print('[' + fsrPin + ', ' + fsrReading + ']');
+  Serial.print("[" + micPin + ", " + micReading + "]");  // the raw analog reading
  
   delay(1000);
 } 

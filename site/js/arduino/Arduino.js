@@ -138,7 +138,7 @@ ARDJS.Arduino = (function() {
 				 */
 				socket.onmessage = function(msg){
 					//console.log(msg);
-					// $('body').append(msg.data + " ");
+					$('body').append(msg.data + " ");
 					processData(msg.data);
 				}
 				/**
