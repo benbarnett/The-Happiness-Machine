@@ -34,7 +34,7 @@ function init() {
 
 	cubeTarget = new THREE.Vector3( 0, 0, 0 );
 	
-	ambientLight = new THREE.DirectionalLight(0xff0000);
+	// ambientLight = new THREE.DirectionalLight(0xff0000);
 	
 
 	scene = new THREE.Scene();
