@@ -242,3 +242,54 @@ function render() {
 	renderer.render( scene, camera );
 
 }
+
+
+
+
+// ARDUINO BINDINGS
+
+
+$('body').bind('arduino', function(event, msg) {
+	console.log(msg);
+	
+	var eventType = 0,
+		eventMap = {
+			
+			// DUCK
+			0: function(value) {
+				if (value > 5) pop();
+			},
+			
+			// WINDMILL
+			1: function(value) {
+				if (value > 5) {
+					blowing = true;
+				}
+				else {
+					blowing = false;
+				}
+			},
+			
+			// GLOBE
+			2: function(x, y, z) {
+				
+			},
+			
+			// TEDDY
+			5: function(value) {
+				if (value == 0) {
+					day = false;
+				}
+				else {
+					day = true;
+				}
+			},
+			
+			// CHAIR
+			6: function(value) {
+				// startup
+			}
+		};
+	
+	eventMap[eventType].call();
+});
