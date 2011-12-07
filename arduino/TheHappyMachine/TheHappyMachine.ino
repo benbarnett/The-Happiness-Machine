@@ -14,15 +14,18 @@ int micReading;
  
 void setup(void) {
   // We'll send debugging information via the Serial monitor
-  Serial.begin(9600);   
+  Serial.begin(115200);   
 }
  
 void loop(void) {
   fsrReading = analogRead(fsrPin);
   micReading = analogRead(micPin);
+  
+  String micReadingOutput = "[" + String(micPin) + ", " + String(micReading) + "]";
+  String fsrReadingOutput = "[" + String(fsrPin) + ", " + String(fsrReading) + "]";
 
-//  Serial.print('[' + fsrPin + ', ' + fsrReading + ']');
-  Serial.print("[" + micPin + ", " + micReading + "]");  // the raw analog reading
+  Serial.println(fsrReadingOutput);
+  Serial.println(micReadingOutput);  // the raw analog reading
  
   delay(1000);
 } 
