@@ -23,7 +23,7 @@ int zPin = 4;
 
 int photoResPin = 5;
 int photoResReading;
-int threshold = 250;
+int threshold = 200;
 int lightOn;
 
 
@@ -91,7 +91,7 @@ void loop(void) {
     }
   
   //OUTPUT
-  
+  //Serial.println(analogRead(photoResPin)); 
   if(photoResReading!=lightOn) {
      photoResReading = lightOn;
      String photoResReadingOutput = "[" + String(photoResPin) + ", " + String(photoResReading) + "]";
