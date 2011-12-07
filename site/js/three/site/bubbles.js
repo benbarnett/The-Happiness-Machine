@@ -5,10 +5,12 @@ var container;
 var camera, scene, renderer;
 var cameraCube, sceneCube;
 
-var mesh, zmesh, lightMesh, geometry;
+var mesh, zmesh, lightMesh, geometry, shader, uniforms, meshDay, uniformsDay;
 var spheres = [];
 
-var blowing = false;
+var textureCube, textureCubeDay;
+
+var blowing = false, day = false;
 
 var directionalLight, pointLight, ambientLight;
 
@@ -39,24 +41,34 @@ function init() {
 
 	scene = new THREE.Scene();
 	sceneCube = new THREE.Scene();
+	sceneCubeDay = new THREE.Scene();
 
 	var geometry = new THREE.SphereGeometry( 100, 32, 16 );
 
-	var path = "textures/cube/Park2/";
+	var path = "textures/cube/Park2/",
+		dayPath = "textures/cube/Park2/day/";
 	var format = '.jpg';
 	var urls = [
 			path + 'posx' + format, path + 'negx' + format,
 			path + 'posy' + format, path + 'negy' + format,
 			path + 'posz' + format, path + 'negz' + format
+		],
+		dayURLs = [
+			dayPath + 'posx' + format, dayPath + 'negx' + format,
+			dayPath + 'posy' + format, dayPath + 'negy' + format,
+			dayPath + 'posz' + format, dayPath + 'negz' + format
 		];
 
 
-	var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+	textureCube = THREE.ImageUtils.loadTextureCube( urls );
+	textureCubeDay = THREE.ImageUtils.loadTextureCube( dayURLs );
 
-	var shader = THREE.ShaderUtils.lib[ "fresnel" ];
-	var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+	shader = THREE.ShaderUtils.lib[ "fresnel" ];
+	uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+	uniformsDay = THREE.UniformsUtils.clone( shader.uniforms );
 
 	uniforms[ "tCube" ].texture = textureCube;
+	// uniforms[ "tCubeDay" ].texture = textureCubeDay;
 
 	var parameters = { fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShader, uniforms: uniforms };
 	var material = new THREE.ShaderMaterial( parameters );
@@ -76,12 +88,20 @@ function init() {
 		spheres.push( mesh );
 
 	}
+	
+	 
+	// day BUBBLES
+	// uniforms[ "tCube" ].texture = textureCubeDay;
+	// uniforms[ "tCubeDay" ].texture = textureCubeDay;
+
+	
+	
 
 	scene.matrixAutoUpdate = false;
 
 	// Skybox
 
-	var shader = THREE.ShaderUtils.lib[ "cube" ];
+	shader = THREE.ShaderUtils.lib[ "cube" ];
 	shader.uniforms[ "tCube" ].texture = textureCube;
 
 	var material = new THREE.ShaderMaterial( {
@@ -95,8 +115,27 @@ function init() {
 	mesh = new THREE.Mesh( new THREE.CubeGeometry( 100000, 100000, 100000 ), material );
 	mesh.flipSided = true;
 	sceneCube.add( mesh );
-
-	//
+	
+	
+	
+	
+	// day lol
+	var shaderDay = THREE.ShaderUtils.lib[ "cube" ];
+	// shaderDay.uniforms[ "tCube" ].texture = textureCubeDay;
+	
+	var material = new THREE.ShaderMaterial( {
+	
+		fragmentShader: shaderDay.fragmentShader,
+		vertexShader: shaderDay.vertexShader,
+		uniforms: shaderDay.uniforms
+	
+	} ),
+	
+	meshDay = new THREE.Mesh( new THREE.CubeGeometry( 100000, 100000, 100000 ), material );
+	meshDay.flipSided = true;
+	sceneCubeDay.add( meshDay );
+	
+	
 
 	renderer = new THREE.WebGLRenderer( { antialias: false } );
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -169,10 +208,20 @@ function render() {
 
 	}
 	
+	if (day) {
+		shader.uniforms[ "tCube" ].texture = textureCubeDay;
+		uniforms[ "tCube" ].texture = textureCubeDay
+	}
+	else {
+		shader.uniforms[ "tCube" ].texture = textureCube;
+		uniforms[ "tCube" ].texture = textureCube
+	}
+	
 	// cubeTarget.x = -500000;
 
 	renderer.clear();
 	renderer.render( sceneCube, cameraCube );
+	// renderer.render(sceneCubeDay, cameraCube);
 	renderer.render( scene, camera );
 
 }
