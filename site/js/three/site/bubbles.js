@@ -27,6 +27,11 @@ document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 init();
 animate();
 
+
+function hide() {
+	$('#overlay').fadeOut(1500);
+}
+
 function init() {
 
 	container = document.createElement( 'div' );
@@ -301,8 +306,8 @@ function processEvent(data) {
 					minX = -5000,
 					maxX = 8000,
 					
-					newMouseX = mouseX + x,
-					newMouseY = mouseY + y;
+					newMouseX = mouseX + ((x > 45) ? 500 : -500),
+					newMouseY = mouseY + ((y > 45) ? 500 : -500);
 					
 				if (newMouseX > maxX) newMouseX = minX;
 				if (newMouseY > maxY) newMouseY = minY;
@@ -324,6 +329,9 @@ function processEvent(data) {
 			// CHAIR
 			6: function(value) {
 				// startup
+				if (value == 1) {
+					hide();
+				}
 			}
 		};
 }
