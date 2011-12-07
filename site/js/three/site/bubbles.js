@@ -69,6 +69,9 @@ function init() {
 	shader = THREE.ShaderUtils.lib[ "fresnel" ];
 	uniforms = THREE.UniformsUtils.clone( shader.uniforms );
 	uniformsDay = THREE.UniformsUtils.clone( shader.uniforms );
+	
+	shader.uniforms[ "tCube" ].texture = textureCubeDay;
+	uniforms[ "tCube" ].texture = textureCubeDay;
 
 	uniforms[ "tCube" ].texture = textureCube;
 	// uniforms[ "tCubeDay" ].texture = textureCubeDay;
@@ -223,11 +226,11 @@ function render() {
 	
 	if (day) {
 		shader.uniforms[ "tCube" ].texture = textureCubeDay;
-		uniforms[ "tCube" ].texture = textureCubeDay
+		uniforms[ "tCube" ].texture = textureCubeDay;
 	}
 	else {
 		shader.uniforms[ "tCube" ].texture = textureCube;
-		uniforms[ "tCube" ].texture = textureCube
+		uniforms[ "tCube" ].texture = textureCube;
 	}
 	
 	
