@@ -19,6 +19,9 @@ var mouseX = 0, mouseY = 0;
 var windowHalfX = window.innerWidth / 2
 var windowHalfY = window.innerHeight / 2;
 
+var lastPop = 0,
+	HIDDEN_VALUE = -10000000;
+
 document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
 init();
@@ -163,7 +166,12 @@ function animate() {
 
 
 function pop() {
-	spheres.pop().position.z = -10000000;
+	for (var i = 10; i >= 0; i--){
+		spheres[Math.floor(Math.random() * (spheres.length-1))].position.z = HIDDEN_VALUE;
+		spheres[Math.floor(Math.random() * (spheres.length-1))].lastPopDate = Date.now();
+	};
+	
+	lastPop = Date.now();
 }
 
 function render() {
@@ -196,13 +204,18 @@ function render() {
 		}
 		else {
 			if (sphere.scale.x < (sphere.originalScale - 0.1)) {
-				// if (i==0) console.log('still scaling', sphere.position.z, sphere.originalZ);
 				sphere.scale.x = sphere.scale.y = sphere.scale.z -= ((0 - sphere.scale.x) / 40);
 			}
 			
-			if (sphere.position.z < sphere.originalZ) {
-				// if (i==0) console.log('still zing', sphere.position.z, sphere.originalZ);
-				// sphere.position.z -= 100 * Math.sin( sphere.position.z );
+			// restore pops
+			if (sphere.position.z == HIDDEN_VALUE) {
+				// console.log(Date.now() - sphere.lastPopDate, sphere.lastPopDate);
+				var lastPop = sphere.lastPopDate || -50000000;
+				
+				if (Date.now() - lastPop >= 6000) {
+					sphere.position.z = sphere.originalZ;
+					sphere.lastPopDate = -5000;
+				}
 			}
 		}
 
@@ -216,6 +229,7 @@ function render() {
 		shader.uniforms[ "tCube" ].texture = textureCube;
 		uniforms[ "tCube" ].texture = textureCube
 	}
+	
 	
 	// cubeTarget.x = -500000;
 
