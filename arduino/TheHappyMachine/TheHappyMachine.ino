@@ -51,12 +51,14 @@ void loop(void) {
 
   
   //MIC
-  if(analogRead(micPin) > 520) {
+  if(analogRead(micPin) > 600) {
     micOn = 1;
   }
   else {
     micOn = 0;
   }
+  
+  Serial.println(analogRead(micPin));
 
   
   //ACCELEROMETER  

@@ -247,10 +247,30 @@ function render() {
 
 
 // ARDUINO BINDINGS
-
+var currentEvent = "";
 
 $('body').bind('arduino', function(event, msg) {
-	console.log(msg);
+	// console.log(msg.data);
+	
+	var data = msg.data;
+	
+	if (data == "[") {
+		currentEvent = data;
+	}
+	else if (data == "]") {
+		currentEvent += data;
+		processEvent(currentEvent);
+	}
+	else {
+		currentEvent += data;
+	}
+	
+});
+
+
+function processEvent(data) {
+	console.log(data[0]);
+	
 	
 	var eventType = 0,
 		eventMap = {
@@ -264,10 +284,13 @@ $('body').bind('arduino', function(event, msg) {
 			1: function(value) {
 				if (value == 1) {
 					blowing = true;
+					setTimeout(function() {
+						blowing = false;
+					}, 5000);
 				}
-				else {
-					blowing = false;
-				}
+				// else {
+				// 					blowing = false;
+				// 				}
 			},
 			
 			// GLOBE
@@ -303,6 +326,4 @@ $('body').bind('arduino', function(event, msg) {
 				// startup
 			}
 		};
-	
-	eventMap[eventType].call();
-});
+}
