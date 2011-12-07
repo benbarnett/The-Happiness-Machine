@@ -35,52 +35,6 @@ $(document).ready(function() {
 					
 		// listen for incoming string messages
 		ard.addEventListener(ArduinoEvent.STRING_MESSAGE, onStringMessage);
-		
-		// set digital pin 13 to output
-		ard.setPinMode(13, Pin.DOUT);
-		// get a reference to the pin
-		blinkLED = ard.getDigitalPin(13);
-		blinkLED.value = Pin.LOW;	
-		setInterval(blink, 3000);
-	
-		//set digital pin 2 to input
-		//ard.setPinMode(2, Pin.DIN);
-		
-		// get a reference to the pin and listen for Change event
-		//var button01 = ard.getDigitalPin(2);
-		//var button01 = new Button(ard.getDigitalPin(2), Button.PULL_DOWN);
-		//button01.addEventListener(ButtonEvent.PRESS, onButtonPress);
-		//button01.addEventListener(ButtonEvent.RELEASE, onButtonRelease);
-		
-		// enable reporting for an analog pin
-		//ard.setAnalogPinReporting(0, Pin.ON);
-		//var pot = ard.getAnalogPin(0);
-		//pot.addEventListener(Event.CHANGE, onPotChange);
-		// disable reporting for an analog pin
-		//ard.setAnalogPinReporting(0, Pin.OFF);
-		
-		// set analog pin to digital input
-		ard.setPinMode(54, Pin.DIN);
-		var button02 = ard.getDigitalPin(54);
-		button02.addEventListener(Event.CHANGE, onButtonChange);
-		
-		// set a pin to PWM
-		ard.setPinMode(11, Pin.PWM);
-		fadeLED = ard.getDigitalPin(11);
-		setInterval(fade, 11);			
-		
-		// set a pin to SERVO
-		ard.setPinMode(9, Pin.SERVO);
-		servo = ard.getDigitalPin(9);
-		//setInterval(servoTest, 5000);
-		
-		//blinkM = new BlinkM(ard);
-		//blinkM.stopScript();
-		//setInterval(randomColor, 2000);
-		
-		//compass = new CompassHMC6352(ard);
-		//compass.addEventListener(Event.CHANGE, onHeadingUpdate);
-		
 	}
 	
 	
