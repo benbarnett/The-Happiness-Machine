@@ -152,8 +152,8 @@ function init() {
 
 function onDocumentMouseMove(event) {
 
-	mouseX = ( event.clientX - windowHalfX ) * 10;
-	mouseY = ( event.clientY - windowHalfY ) * 10;
+	// mouseX = ( event.clientX - windowHalfX ) * 10;
+	// mouseY = ( event.clientY - windowHalfY ) * 10;
 
 }
 
@@ -262,7 +262,7 @@ $('body').bind('arduino', function(event, msg) {
 			
 			// WINDMILL
 			1: function(value) {
-				if (value > 5) {
+				if (value == 1) {
 					blowing = true;
 				}
 				else {
@@ -272,16 +272,29 @@ $('body').bind('arduino', function(event, msg) {
 			
 			// GLOBE
 			2: function(x, y, z) {
+				var minY = -10000,
+					maxY = 3000,
+					
+					minX = -5000,
+					maxX = 8000,
+					
+					newMouseX = mouseX + x,
+					newMouseY = mouseY + y;
+					
+				if (newMouseX > maxX) newMouseX = minX;
+				if (newMouseY > maxY) newMouseY = minY;
 				
+				if (newMouseX < minX) newMouseX = maxX;
+				if (newMouseY < minY) newMouseY = maxY;
 			},
 			
 			// TEDDY
 			5: function(value) {
-				if (value == 0) {
-					day = false;
+				if (value == 1) {
+					day = true;
 				}
 				else {
-					day = true;
+					day = false;
 				}
 			},
 			
