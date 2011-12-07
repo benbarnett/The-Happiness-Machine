@@ -7,9 +7,31 @@ For more information see www.ladyada.net/learn/sensors/fsr.html */
  
 int fsrPin = 0;  // the FSR and 10K pulldown are connected to a0
 int fsrReading; // the analog reading from the FSR resistor divider
+int squeezeOn;
+
 int micPin = 1;
 int micReading;
+int micOn;
 
+int accePin = 2;
+int acceReadingX;
+int acceReadingY;
+int acceReadingZ;
+int xPin = 2;
+int yPin = 3;
+int zPin = 4;
+
+int photoResPin = 5;
+int photoResReading;
+int threshold = 250;
+int lightOn;
+
+
+//The minimum and maximum values that came from
+//the accelerometer while standing still
+//You very well may need to change these
+int minVal = 265;
+int maxVal = 402;
 
  
 void setup(void) {
@@ -18,14 +40,78 @@ void setup(void) {
 }
  
 void loop(void) {
-  fsrReading = analogRead(fsrPin);
-  micReading = analogRead(micPin);
   
-  String micReadingOutput = "[" + String(micPin) + ", " + String(micReading) + "]";
-  String fsrReadingOutput = "[" + String(fsrPin) + ", " + String(fsrReading) + "]";
+  //FSR
+  if(analogRead(fsrPin) > 500) {
+     squeezeOn = 1; 
+  }
+  else {
+   squeezeOn = 0; 
+  }
 
-  Serial.println(fsrReadingOutput);
-  Serial.println(micReadingOutput);  // the raw analog reading
+  
+  //MIC
+  if(analogRead(micPin) > 520) {
+    micOn = 1;
+  }
+  else {
+    micOn = 0;
+  }
+
+  
+  //ACCELEROMETER  
+  
+  //read the analog values from the accelerometer
+  int xRead = analogRead(xPin);
+  int yRead = analogRead(yPin);
+  int zRead = analogRead(zPin);
+  
+  //convert read values to degrees -90 to 90 - Needed for atan2
+  int xAng = map(xRead, minVal, maxVal, -90, 90);
+  int yAng = map(yRead, minVal, maxVal, -90, 90);
+  int zAng = map(zRead, minVal, maxVal, -90, 90);
+  
+  //Caculate 360deg values like so: atan2(-yAng, -zAng)
+  //atan2 outputs the value of -π to π (radians)
+  //We are then converting the radians to degrees
+  acceReadingX = RAD_TO_DEG * (atan2(-yAng, -zAng) + PI);
+  acceReadingY = RAD_TO_DEG * (atan2(-xAng, -zAng) + PI);
+  acceReadingZ = RAD_TO_DEG * (atan2(-yAng, -xAng) + PI);
+  
+  //PHOTORESISTOR - Light Off is 0 / Light On is 1
+  
+    if(analogRead(photoResPin) > threshold ){    
+        //Light Off
+        lightOn = 0;
+    }else{
+        //Light On
+        lightOn = 1;
+    }
+  
+  //OUTPUT
+  
+  if(photoResReading!=lightOn) {
+     photoResReading = lightOn;
+     String photoResReadingOutput = "[" + String(photoResPin) + ", " + String(photoResReading) + "]";
+    Serial.println(photoResReadingOutput); 
+  }
+  
+  if(micReading != micOn) {
+     micReading = micOn;
+     String micReadingOutput = "[" + String(micPin) + ", " + String(micReading) + "]";
+     Serial.println(micReadingOutput);  // the raw analog reading
+  }
+  
+  if(fsrReading != squeezeOn) {
+    fsrReading = squeezeOn;
+      String fsrReadingOutput = "[" + String(fsrPin) + ", " + String(fsrReading) + "]";
+      Serial.println(fsrReadingOutput);
+  }
+  
+
+  String accelerometerReadingOutput = "[" + String(accePin) + ", "+
+    String(acceReadingX) + ", "+String(acceReadingY) + ", "+String(acceReadingZ) + "]";
+  Serial.println(accelerometerReadingOutput);
  
-  delay(1000);
+  delay(100);
 } 
