@@ -26,7 +26,9 @@ document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
 init();
 animate();
-
+setTimeout(function() {
+	hide();
+}, 10000);
 
 function hide() {
 	$('#overlay').fadeOut(1500);
@@ -260,10 +262,10 @@ $('body').bind('arduino', function(event, msg) {
 	var data = msg.data;
 	
 	if (data == "[") {
-		currentEvent = data;
+		currentEvent = "";
 	}
 	else if (data == "]") {
-		currentEvent += data;
+		currentEvent += "";
 		processEvent(currentEvent);
 	}
 	else {
@@ -274,24 +276,29 @@ $('body').bind('arduino', function(event, msg) {
 
 
 function processEvent(data) {
-	console.log(data[0]);
+	// console.log(data[0]);
 	
 	
-	var eventType = 0,
+	var array = data.split(',');
+	// console.log(array);
+	
+	var eventType = array[0],
 		eventMap = {
 			
 			// DUCK
-			0: function(value) {
-				if (value > 5) pop();
+			9: function(value) {
+				// console.log(value);
+				if (value[1] == 1) pop();
 			},
 			
 			// WINDMILL
 			1: function(value) {
-				if (value == 1) {
+				if (value[1] == 1) {
+					console.log('mic on');
 					blowing = true;
 					setTimeout(function() {
 						blowing = false;
-					}, 5000);
+					}, 2000);
 				}
 				// else {
 				// 					blowing = false;
@@ -300,13 +307,9 @@ function processEvent(data) {
 			
 			// GLOBE
 			2: function(x, y, z) {
-				var minY = -10000,
-					maxY = 3000,
+				
 					
-					minX = -5000,
-					maxX = 8000,
-					
-					newMouseX = mouseX + ((x > 45) ? 500 : -500),
+				var	newMouseX = mouseX + ((x > 45) ? 500 : -500),
 					newMouseY = mouseY + ((y > 45) ? 500 : -500);
 					
 				if (newMouseX > maxX) newMouseX = minX;
@@ -318,20 +321,24 @@ function processEvent(data) {
 			
 			// TEDDY
 			5: function(value) {
-				if (value == 1) {
-					day = true;
+				if (value[1] == 1) {
+					day = false;
 				}
 				else {
-					day = false;
+					day = true;
 				}
 			},
 			
 			// CHAIR
 			6: function(value) {
 				// startup
-				if (value == 1) {
+				if (value[1] == 1) {
 					hide();
 				}
 			}
 		};
+		
+	// if (eventType == 0) console.log(data);
+	
+	if (eventMap[eventType]) eventMap[eventType](array);
 }

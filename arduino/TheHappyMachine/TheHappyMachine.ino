@@ -58,27 +58,27 @@ void loop(void) {
     micOn = 0;
   }
   
-  Serial.println(analogRead(micPin));
+//  Serial.println(analogRead(micPin));
 
   
   //ACCELEROMETER  
   
   //read the analog values from the accelerometer
-  int xRead = analogRead(xPin);
-  int yRead = analogRead(yPin);
-  int zRead = analogRead(zPin);
-  
-  //convert read values to degrees -90 to 90 - Needed for atan2
-  int xAng = map(xRead, minVal, maxVal, -90, 90);
-  int yAng = map(yRead, minVal, maxVal, -90, 90);
-  int zAng = map(zRead, minVal, maxVal, -90, 90);
-  
-  //Caculate 360deg values like so: atan2(-yAng, -zAng)
-  //atan2 outputs the value of -π to π (radians)
-  //We are then converting the radians to degrees
-  acceReadingX = RAD_TO_DEG * (atan2(-yAng, -zAng) + PI);
-  acceReadingY = RAD_TO_DEG * (atan2(-xAng, -zAng) + PI);
-  acceReadingZ = RAD_TO_DEG * (atan2(-yAng, -xAng) + PI);
+//  int xRead = analogRead(xPin);
+//  int yRead = analogRead(yPin);
+//  int zRead = analogRead(zPin);
+//  
+//  //convert read values to degrees -90 to 90 - Needed for atan2
+//  int xAng = map(xRead, minVal, maxVal, -90, 90);
+//  int yAng = map(yRead, minVal, maxVal, -90, 90);
+//  int zAng = map(zRead, minVal, maxVal, -90, 90);
+//  
+//  //Caculate 360deg values like so: atan2(-yAng, -zAng)
+//  //atan2 outputs the value of -π to π (radians)
+//  //We are then converting the radians to degrees
+//  acceReadingX = RAD_TO_DEG * (atan2(-yAng, -zAng) + PI);
+//  acceReadingY = RAD_TO_DEG * (atan2(-xAng, -zAng) + PI);
+//  acceReadingZ = RAD_TO_DEG * (atan2(-yAng, -xAng) + PI);
   
   //PHOTORESISTOR - Light Off is 0 / Light On is 1
   
@@ -106,14 +106,14 @@ void loop(void) {
   
   if(fsrReading != squeezeOn) {
     fsrReading = squeezeOn;
-      String fsrReadingOutput = "[" + String(fsrPin) + ", " + String(fsrReading) + "]";
+      String fsrReadingOutput = "[" + String(9) + ", " + String(fsrReading) + "]";
       Serial.println(fsrReadingOutput);
   }
   
 
-  String accelerometerReadingOutput = "[" + String(accePin) + ", "+
-    String(acceReadingX) + ", "+String(acceReadingY) + ", "+String(acceReadingZ) + "]";
-  Serial.println(accelerometerReadingOutput);
+//  String accelerometerReadingOutput = "[" + String(accePin) + ", "+
+//    String(acceReadingX) + ", "+String(acceReadingY) + ", "+String(acceReadingZ) + "]";
+//  Serial.println(accelerometerReadingOutput);
  
   delay(100);
 } 
